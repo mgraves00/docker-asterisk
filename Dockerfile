@@ -15,13 +15,16 @@ FROM alpine:edge as final
 
 RUN apk add asterisk asterisk-sounds-en asterisk-sounds-moh
 COPY ${PWD}/entrypoint.sh /entrypoint.sh
+COPY ${PWD}/initial-config.tgz /tmp/initial-config.tgz
 RUN chmod 755 /entrypoint.sh
-RUN rmdir /etc/asterisk || true
-RUN mkdir -p /data/etc
+RUN mkdir /data
+RUN mv /etc/asterisk /data/etc
 RUN ln -s /data/etc /etc/asterisk
-RUN rm -rf /var/log/asterisk || true
-RUN mkdir -p /data/log
-RUN chown asterisk /data/log
+#RUN mv /var/db/asterisk /data/db
+#RUN ln -s /data/db /var/db/asterisk
+RUN mv /var/spool/asterisk /data/spool
+RUN ln -s /data/spool /var/spool/asterisk
+RUN mv /var/log/asterisk /data/log
 RUN ln -s /data/log /var/log/asterisk
  
 EXPOSE 5060/udp 5060/tcp 5061/udp 5061/tcp 8088/tcp 5038/tcp
