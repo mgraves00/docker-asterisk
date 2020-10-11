@@ -14,7 +14,11 @@
 # OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  
 if [ "$1" = "" ]; then
-  exec "/usr/sbin/asterisk -T -W -U asterisk -p -nvvvdddf"
+  if [ ! -f /etc/asterisk/asterisk.conf ]; then
+    echo "Deploying initial configuration"
+    tar -C /etc/asterisk -zxf /tmp/initial-config.tgz
+  fi
+  exec /usr/sbin/asterisk -T -W -U asterisk -p -nvvvdddf
 else
   exec "$@"
 fi
