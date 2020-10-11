@@ -15,10 +15,17 @@
 
 VER=17
 
+if [ -d cfg -a ! -f initial-config.tgz ]; then
+	cd cfg
+	rm -f ../initial-config.tgz
+	tar -czf ../initial-config.tgz *
+	cd ..
+fi
+
 docker build --tag "asterisk:$VER" .
 cat << EOF
   To start run:
- 
-  docker run -p 5060:5060/udp -p 5061:5061/udp -p 5060:5060/tcp -p 5061:5061/tcp -p 8088:8088/tcp -p 5038:5038/tcp --mount type=bind,source="\$(pwd)"/localdata,target=/data -d asterisk:$VER
+  docker volume create asterisk 
+  docker run -p 5060:5060/udp -p 5061:5061/udp -p 5060:5060/tcp -p 5061:5061/tcp -p 8088:8088/tcp -p 5038:5038/tcp -v asterisk:/data -d asterisk:$VER
 
 EOF
